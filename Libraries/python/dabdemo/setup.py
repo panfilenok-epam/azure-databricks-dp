@@ -11,14 +11,9 @@ setup(
   description = "Sample Databricks project",
   packages = find_packages(include = ['dabdemo', 'dabdemo.*']),
   entry_points={
-    'my_entry_point_group_id': ['my_entry_point_fn=dabdemo.addcol:start'],
+    'my_entry_point_group_id': ['my_entry_point_fn=dabdemo.__main__:main'],
   },
   install_requires=[
-    'setuptools',
-    'pyyaml',
-    'delta-spark',
-    'loguru',
-    'python-dotenv',
-    'databricks-sdk'
+    'setuptools'
   ]
 )
