@@ -1,0 +1,76 @@
+name: "Deploy"
+on:
+  workflow_dispatch:
+
+permissions: # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-azure
+  id-token: write # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+env:
+  ARM_CLIENT_ID: ${{ vars.ARM_CLIENT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }}
+  ARM_USE_OIDC: true
+
+jobs:
+  build-package:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Git Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Setup Python Virtual Environment
+        working-directory: ./Libraries/python/dabdemo
+        run: |
+            pip install --upgrade pip
+            python -m venv env
+            source env/bin/activate
+            echo "VIRTUAL ENV:" $VIRTUAL_ENV
+            pip install setuptools wheel
+  
+      - name: Build wheel package
+        working-directory: ./Libraries/python/dabdemo
+        run: |
+            source env/bin/activate
+            python ./setup.py bdist_wheel
+
+      - name: Publish artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: DPArtifact
+          path: ./Libraries/python/dabdemo/dist/*.whl
+  
+  plan:
+    runs-on: ubuntu-latest
+    needs: [build-package]
+    steps:
+
+      - name: Git Checkout
+        uses: actions/checkout@v4
+
+      - name: Download data pipeline artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: DPArtifact
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: 'Az CLI login'
+        uses: azure/login@v1
+        with:
+            client-id: ${{ vars.AZURE_SERVICE_PRINCIPAL_ID }}
+            tenant-id: ${{ vars.AZURE_TENANT_ID }}
+            subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+            enable-AZPSSession: true
+
+      - name: Terraform Init
+        run: terraform init -backend-config="env/dev/backend.tfvars"
+
+      - name: Terraform Plan
+        run: terraform plan -var-file="env/dev/input.tfvars"
