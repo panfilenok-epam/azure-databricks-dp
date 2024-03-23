@@ -9,9 +9,16 @@ setup(
   url = "https://github.com/panfilenok-epam/azure-databricks-dp",
   author_email = "alexander_panfilenok@epam.com",
   description = "Sample Databricks project",
-  packages = find_packages(include = ["dabdemo"]),
+  packages = find_packages(include = ['dabdemo', 'dabdemo.*']),
   entry_points={
     'my_entry_point_group_id': ['my_entry_point_fn=dabdemo.addcol:start'],
   },
-  install_requires = ["setuptools"]
+  install_requires=[
+    'setuptools',
+    'pyyaml',
+    'delta-spark',
+    'loguru',
+    'python-dotenv',
+    'databricks-sdk'
+  ]
 )

@@ -6,8 +6,11 @@ logging.basicConfig(format='%(asctime)s - %(message)s',
                     level=logging.INFO,
                     )
 
-def start123():
+def start():
   logging.info("Starting processing job.")
 
 def with_status(df):
   return df.withColumn("status", F.lit("checked"))
+
+if __name__ == "__main__":
+    start()
