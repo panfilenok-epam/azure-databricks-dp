@@ -6,7 +6,7 @@ logging.basicConfig(format='%(asctime)s - %(message)s',
                     level=logging.INFO,
                     )
 
-def start():
+def start123():
   logging.info("Starting processing job.")
 
 def with_status(df):
