@@ -23,6 +23,11 @@ variable "databricks_workspace_id" {
   type = string 
 }
 
+variable "databricks_cluster_id" {
+  description = "The ID of the Databricks cluster."
+  type = string
+}
+
 terraform {
   required_providers {
     databricks = {
@@ -44,9 +49,6 @@ resource "databricks_dbfs_file" "wheel_package_file" {
 }
 
 resource "databricks_job" "db_jpb" {
-  depends_on = [
-    data.terraform_remote_state.dp_default
-  ]
 
   name     = "Databricks Job runnung by schedule"
   schedule {
@@ -58,7 +60,7 @@ resource "databricks_job" "db_jpb" {
     # It's required because the current version of the provider treats task blocks as an ordered list.
     # https://registry.terraform.io/providers/databricks/databricks/latest/docs/resources/job
     task_key            = "A"
-    existing_cluster_id = data.terraform_remote_state.dp_default.outputs.databricks_cluster_id
+    existing_cluster_id = var.databricks_cluster_id
 
     library {
       whl = "dbfs:${databricks_dbfs_file.wheel_package_file.path}"
