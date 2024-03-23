@@ -4,7 +4,7 @@ locals {
 
   # The entry point of the package. This is the name of the function that is called when the package is executed.
   # The function must be defined in the setup.py file of the package. See: /Libraries/python/dabdemo/setup.py
-  wheel_package_entry_point = "my_entry_point"
+  wheel_package_entry_point = "my_entry_point_fn"
 
   # The file name consists of the package name, version, python version, platform and architecture
   # The name and the version are defined in the setup.py file of the package. See: /Libraries/python/dabdemo/setup.py

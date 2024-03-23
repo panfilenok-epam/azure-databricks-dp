@@ -10,6 +10,8 @@ setup(
   author_email = "alexander_panfilenok@epam.com",
   description = "Sample Databricks project",
   packages = find_packages(include = ["dabdemo"]),
-  entry_points={"my_entry_point": "run=dabdemo.__main__:main"},
+  entry_points={
+    'my_entry_point_group_id': ['my_entry_point_fn=dabdemo.addcol:start'],
+  },
   install_requires = ["setuptools"]
 )
